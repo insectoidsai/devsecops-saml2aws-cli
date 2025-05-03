@@ -1,28 +1,34 @@
----
+version: 2
+
 project_name: saml2aws
 
 builds:
-- main: ./cmd/saml2aws/main.go
-  binary: saml2aws
-  flags:
-    - -trimpath
-    - -v
-  ldflags:
-    - -s -w -X main.Version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
-  goos:
-    - darwin
-  goarch:
-    - amd64
-    - arm64
-    - arm
-  env:
-    - CGO_ENABLED=1
+  - id: saml2aws-macos
+    main: ./cmd/saml2aws/main.go
+    binary: saml2aws
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - CGO_ENABLED=1
+    flags:
+      - -trimpath
+      - -v
+    ldflags:
+      - -s -w -X main.Version={{ .Version }} -X main.commit={{ .Commit }} -X main.date={{ .Date }}
+
 archives:
-  - format: tar.gz
+  - id: saml2aws-tarball
+    ids:
+      - saml2aws-macos
+    formats:
+      - tar.gz
     wrap_in_directory: false
-    # remove README and LICENSE
     files:
       - LICENSE.md
       - README.md
+
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_darwin_checksums.txt"

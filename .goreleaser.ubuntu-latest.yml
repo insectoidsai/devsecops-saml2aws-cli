@@ -1,36 +1,42 @@
----
+version: 2
+
 project_name: saml2aws
 
 builds:
-- main: ./cmd/saml2aws/main.go
-  binary: saml2aws
-  flags:
-    - -trimpath
-    - -v
-  ldflags:
-    - -s -w -X main.Version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
-  goos:
-    - windows
-    - linux
-  goarch:
-    - amd64
-    - arm64
-    - arm
-  overrides:
-    - goos: linux
-      goarch: amd64
-      goamd64: v1
-      env:
-        - CGO_ENABLED=0
+  - id: saml2aws-cross
+    main: ./cmd/saml2aws/main.go
+    binary: saml2aws
+    goos:
+      - windows
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    flags:
+      - -trimpath
+      - -v
+    ldflags:
+      - -s -w -X main.Version={{ .Version }} -X main.commit={{ .Commit }} -X main.date={{ .Date }}
+    overrides:
+      - goos: linux
+        goarch: amd64
+        goamd64: v1
+        env:
+          - CGO_ENABLED=0
+
 archives:
-  - format: tar.gz
+  - id: saml2aws-archive
+    ids:
+      - saml2aws-cross
     wrap_in_directory: false
+    format: tar.gz
     format_overrides:
       - goos: windows
         format: zip
-    # remove README and LICENSE
     files:
       - LICENSE.md
       - README.md
+
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
