@@ -459,7 +459,7 @@ To use this credential, call the AWS CLI with the --profile option (e.g. aws --p
 If you are using WSL1 or WSL2, you might get the following error when attempting to save the credentials into the keychain
 
 ```
- No such interface “org.freedesktop.DBus.Properties” on object at path /
+ No such interface "org.freedesktop.DBus.Properties" on object at path /
 ```
 
 This happens because the preferred keyring back-end - uses the `gnome-keyring` by default - which requires X11 - and if you are not using Windows 11 with support for Linux GUI applications - this can be difficult without [configuring a X11 forward](https://stackoverflow.com/questions/61110603/how-to-set-up-working-x11-forwarding-on-wsl2).
@@ -747,6 +747,12 @@ Install the binary to `$GOPATH/bin`.
 
 ```
 make install
+```
+
+**If you are developing on macOS 10.15+ and encounter a "Killed: 9" or code signing error when running the binary, you may need to codesign the binary for local development:**
+
+```
+make codesign
 ```
 
 Then to test the software just run.

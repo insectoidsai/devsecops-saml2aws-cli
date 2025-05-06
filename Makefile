@@ -44,6 +44,38 @@ install:
 	go install ./cmd/saml2aws
 .PHONY: install
 
+setup-path:
+	@echo "--- setting up PATH for Go binaries"
+	@if ! echo "$$PATH" | grep -q "$(shell go env GOPATH)/bin"; then \
+		echo "export PATH=\$$PATH:$(shell go env GOPATH)/bin" >> ~/.zshrc; \
+		echo "✓ Added Go bin directory to PATH in ~/.zshrc"; \
+		echo "Please run: source ~/.zshrc to apply changes"; \
+	else \
+		echo "✓ Go bin directory already in PATH"; \
+	fi
+.PHONY: setup-path
+
+verify-install:
+	@echo "--- verifying saml2aws installation"
+	@if ! command -v saml2aws >/dev/null 2>&1; then \
+		echo "Error: saml2aws binary not found in PATH"; \
+		echo "Please ensure GOPATH/bin is in your PATH"; \
+		echo "Current GOPATH: $(shell go env GOPATH)"; \
+		echo "Run 'make setup-path' to add Go bin directory to PATH"; \
+		exit 1; \
+	fi
+	@saml2aws --version
+	@echo "✓ saml2aws installed successfully"
+.PHONY: verify-install
+
+codesign:
+	codesign --force --deep --sign - /Users/chris.powell/go/bin/saml2aws
+.PHONY: codesign
+
+logs:
+	log show --predicate 'eventMessage contains "saml2aws"' --last 1h
+.PHONY: logs
+
 build:
 
 ifndef GORELEASER
